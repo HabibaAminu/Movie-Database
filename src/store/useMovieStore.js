@@ -8,6 +8,7 @@ const useMovieStore = create((set, get) => ({
   loading: false,
   movieCache: {},
   watchlist: JSON.parse(localStorage.getItem("watchlist")) || [],
+  favorites: JSON.parse(localStorage.getItem("favorites")) || [],
 
   fetchMovies: async () => {
     try {
@@ -23,15 +24,20 @@ const useMovieStore = create((set, get) => ({
    // Fetch recommended movies on first load
    fetchRecommendedMovies: async () => {
     set({ loading: true });
+  
     try {
-      const response = await fetchMovies("Batman", 1); // Example: Fetch Batman movies
-      console.log("Recommended Movies API Response:", response); 
+      const keywords = ["Avengers", "Matrix", "Harry Potter", "Star Wars", "Spider-Man"];
+      const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
+  
+      const response = await fetchMovies(randomKeyword);
+      console.log("Recommended Movies using keyword:", randomKeyword);
+  
       set({ recommendedMovies: response.Search || [], loading: false });
     } catch (error) {
       console.error("Error fetching recommended movies:", error);
-      set({ recommendedMovies: [], loading: false }); // Ensure fallback to empty array
+      set({ recommendedMovies: [], loading: false });
     }
-  },
+  },  
 
   searchMovies: async (query) => {
     set({ loading: true });
@@ -63,6 +69,21 @@ const useMovieStore = create((set, get) => ({
     const updatedList = get().watchlist.filter((movie) => movie.imdbID !== id);
     set({ watchlist: updatedList });
     localStorage.setItem("watchlist", JSON.stringify(updatedList));
+  },
+
+  toggleFavorite: (movie) => {
+    const favorites = get().favorites;
+    const exists = favorites.find((fav) => fav.imdbID === movie.imdbID);
+    let updatedFavorites;
+
+    if (exists) {
+      updatedFavorites = favorites.filter((fav) => fav.imdbID !== movie.imdbID);
+    } else {
+      updatedFavorites = [...favorites, movie];
+    }
+
+    set({ favorites: updatedFavorites });
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   },
 }));
 

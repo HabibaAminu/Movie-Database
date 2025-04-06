@@ -1,3 +1,7 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
+
 const SearchBar = ({ query, setQuery, onSearch }) => {
   return (
     <form onSubmit={onSearch} className="flex items-center gap-3">
@@ -8,9 +12,16 @@ const SearchBar = ({ query, setQuery, onSearch }) => {
         placeholder="Search for a movie here..."
         className="border p-2 rounded w-full"
       />
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+      <button
+        type="submit"
+        className="bg-[#45E9F8] text-white px-4 py-2 rounded-lg shadow hover:bg-[#2ad4e5] active:scale-95 transition-all"
+      >
         Search
       </button>
+      <Link
+        to="/watchlist"
+        className="bg-[#45E9F8] text-white px-4 py-2 rounded-lg shadow hover:bg-[#2ad4e5] active:scale-95 transition-all"
+      >Watchlist</Link>
     </form>
   );
 };

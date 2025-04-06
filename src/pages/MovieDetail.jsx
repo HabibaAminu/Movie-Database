@@ -4,16 +4,35 @@ import useMovieStore from "../store/useMovieStore";
 
 const MovieDetail = () => {
   const { id } = useParams();
-  const { selectedMovie, getMovieDetails, loading } = useMovieStore();
+  const {
+    selectedMovie,
+    getMovieDetails,
+    watchlist,
+    addToWatchlist,
+    removeFromWatchlist,
+    loading,
+  } = useMovieStore();
 
   useEffect(() => {
     getMovieDetails(id);
-  }, [id, getMovieDetails]);
+  }, [id]);
 
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
 
   if (!selectedMovie)
     return <p className="text-center text-gray-500">Movie not found.</p>;
+
+  const isInWatchlist = watchlist.some(
+    (movie) => movie.imdbID === selectedMovie.imdbID
+  );
+
+  const handleToggleWatchlist = () => {
+    if (isInWatchlist) {
+      removeFromWatchlist(selectedMovie.imdbID);
+    } else {
+      addToWatchlist(selectedMovie);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -29,7 +48,7 @@ const MovieDetail = () => {
             {selectedMovie.Year} • {selectedMovie.Genre}
           </p>
           <p className="mt-3 text-gray-700">{selectedMovie.Plot}</p>
-          <div className="mt-4">
+          <div className="mt-4 space-y-1">
             <p>
               <strong>Director:</strong> {selectedMovie.Director}
             </p>
@@ -39,12 +58,17 @@ const MovieDetail = () => {
             <p>
               <strong>IMDb Rating:</strong> ⭐ {selectedMovie.imdbRating}
             </p>
+
             <button
-        onClick={() => addToWatchlist(selectedMovie)}
-        className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-      >
-        Add to Watchlist
-      </button>
+              onClick={handleToggleWatchlist}
+              className={`mt-4 px-4 py-2 rounded text-white ${
+                isInWatchlist
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+            </button>
           </div>
         </div>
       </div>
